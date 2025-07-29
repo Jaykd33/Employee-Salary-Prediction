@@ -50,9 +50,6 @@ python salary_prediction_model.py
 python app.py
 ```
 
-5. **Open your browser**
-
-Navigate to [http://127.0.0.1:5000](http://127.0.0.1:5000) to use the app.
 
 ---
 
@@ -70,10 +67,3 @@ Feel free to open issues or submit pull requests for improvements!
 
 ---
 
-## License 📄
-
-MIT License
-
----
-
-Made with ❤️ for smart career decisions!
