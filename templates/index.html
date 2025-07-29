@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Employee Salary Prediction</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            overflow-x: hidden;
+        }
+        .header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(30, 30, 47, 0.95);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            z-index: 1000;
+        }
+        .header h1 {
+            margin: 0;
+            font-weight: 700;
+            font-size: 1.8rem;
+            letter-spacing: 1.5px;
+        }
+        .accuracy-badge {
+            background: #ffd700;
+            color: #1e1e2f;
+            font-weight: 700;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            user-select: none;
+            box-shadow: 0 0 8px #ffd700;
+        }
+        .menu-icon {
+            cursor: pointer;
+            width: 30px;
+            height: 25px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .menu-icon div {
+            height: 4px;
+            background: white;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+        .side-menu {
+            position: fixed;
+            top: 0;
+            left: -250px;
+            width: 250px;
+            height: 100%;
+            background: #1e1e2f;
+            box-shadow: 2px 0 12px rgba(0,0,0,0.5);
+            padding-top: 60px;
+            transition: left 0.3s ease;
+            z-index: 999;
+        }
+        .side-menu.open {
+            left: 0;
+        }
+        .side-menu a {
+            display: block;
+            padding: 15px 30px;
+            color: #fff;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            border-bottom: 1px solid #333;
+            transition: background 0.2s ease;
+        }
+        .side-menu a:hover {
+            background: #764ba2;
+        }
+        .container {
+            margin-top: 80px;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 20px;
+            background: rgba(30, 30, 47, 0.85);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+        form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px 30px;
+        }
+        label {
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 6px;
+            display: block;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            font-size: 1rem;
+            outline: none;
+            transition: box-shadow 0.3s ease;
+        }
+        input:focus, select:focus {
+            box-shadow: 0 0 8px #764ba2;
+        }
+        .full-width {
+            grid-column: 1 / -1;
+        }
+        button {
+            grid-column: 1 / -1;
+            padding: 15px;
+            background: #764ba2;
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-weight: 700;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        button:hover {
+            background: #667eea;
+        }
+        .result {
+            margin-top: 30px;
+            background: #2a2a40;
+            padding: 25px;
+            border-radius: 15px;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #ffd700;
+            letter-spacing: 1px;
+        }
+        .analysis {
+            margin-top: 25px;
+            background: #2a2a40;
+            padding: 20px;
+            border-radius: 15px;
+            color: #ddd;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+        .analysis h3 {
+            margin-top: 0;
+            color: #ffd700;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        .analysis ul {
+            list-style: disc;
+            margin-left: 20px;
+        }
+        .analysis ul li {
+            margin-bottom: 6px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header" style="justify-content: center; position: relative;">
+        <h1>Employee Salary Prediction</h1>
+        {% if accuracy and accuracy.r2_score is not none %}
+        <div class="accuracy-badge" style="position: absolute; right: 30px; top: 15px;">
+            {{ (accuracy.r2_score * 100) | round(2) }}% Accurate & Trustable
+        </div>
+        {% endif %}
+        <div class="menu-icon" id="menuIcon" tabindex="0" aria-label="Toggle menu" role="button" style="position: absolute; left: 30px; top: 15px;">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+    <nav class="side-menu" id="sideMenu" aria-label="Main navigation">
+        <a href="/">Home</a>
+        <a href="/about">About</a>
+        <a href="/trends">Trends</a>
+        <a href="/recommendations">Recommendations</a>
+    </nav>
+    <div class="container">
+        <form method="POST" action="/predict" novalidate>
+            <div>
+                <label for="Age">Age</label>
+                <input type="number" id="Age" name="Age" required min="18" max="100" value="{{ input_data['Age'] if input_data else '' }}" />
+            </div>
+            <div>
+                <label for="Gender">Gender</label>
+                <select id="Gender" name="Gender" required>
+                    <option value="">Select Gender</option>
+                    <option value="Male" {% if input_data and input_data['Gender'] == 'Male' %}selected{% endif %}>Male</option>
+                    <option value="Female" {% if input_data and input_data['Gender'] == 'Female' %}selected{% endif %}>Female</option>
+                </select>
+            </div>
+            <div>
+                <label for="Department">Department</label>
+                <select id="Department" name="Department" required>
+                    <option value="">Select Department</option>
+                    <option value="Engineering" {% if input_data and input_data['Department'] == 'Engineering' %}selected{% endif %}>Engineering</option>
+                    <option value="Sales" {% if input_data and input_data['Department'] == 'Sales' %}selected{% endif %}>Sales</option>
+                    <option value="Finance" {% if input_data and input_data['Department'] == 'Finance' %}selected{% endif %}>Finance</option>
+                    <option value="HR" {% if input_data and input_data['Department'] == 'HR' %}selected{% endif %}>HR</option>
+                    <option value="Marketing" {% if input_data and input_data['Department'] == 'Marketing' %}selected{% endif %}>Marketing</option>
+                    <option value="Product" {% if input_data and input_data['Department'] == 'Product' %}selected{% endif %}>Product</option>
+                </select>
+            </div>
+            <div>
+                <label for="Job_Title">Job Title</label>
+                <select id="Job_Title" name="Job_Title" required>
+                    <option value="">Select Job Title</option>
+                    <option value="Intern" {% if input_data and input_data['Job_Title'] == 'Intern' %}selected{% endif %}>Intern</option>
+                    <option value="Analyst" {% if input_data and input_data['Job_Title'] == 'Analyst' %}selected{% endif %}>Analyst</option>
+                    <option value="Engineer" {% if input_data and input_data['Job_Title'] == 'Engineer' %}selected{% endif %}>Engineer</option>
+                    <option value="Manager" {% if input_data and input_data['Job_Title'] == 'Manager' %}selected{% endif %}>Manager</option>
+                    <option value="Executive" {% if input_data and input_data['Job_Title'] == 'Executive' %}selected{% endif %}>Executive</option>
+                </select>
+            </div>
+            <div>
+                <label for="Experience_Years">Experience Years</label>
+                <input type="number" id="Experience_Years" name="Experience_Years" required min="0" max="60" value="{{ input_data['Experience_Years'] if input_data else '' }}" />
+            </div>
+            <div>
+                <label for="Education_Level">Education Level</label>
+                <select id="Education_Level" name="Education_Level" required>
+                    <option value="">Select Education Level</option>
+                    <option value="Bachelor" {% if input_data and input_data['Education_Level'] == 'Bachelor' %}selected{% endif %}>Bachelor</option>
+                    <option value="Master" {% if input_data and input_data['Education_Level'] == 'Master' %}selected{% endif %}>Master</option>
+                    <option value="PhD" {% if input_data and input_data['Education_Level'] == 'PhD' %}selected{% endif %}>PhD</option>
+                </select>
+            </div>
+            <div>
+                <label for="Location">Location</label>
+                <select id="Location" name="Location" required>
+                    <option value="">Select Location</option>
+                    <option value="Austin" {% if input_data and input_data['Location'] == 'Austin' %}selected{% endif %}>Austin</option>
+                    <option value="Chicago" {% if input_data and input_data['Location'] == 'Chicago' %}selected{% endif %}>Chicago</option>
+                    <option value="New York" {% if input_data and input_data['Location'] == 'New York' %}selected{% endif %}>New York</option>
+                    <option value="San Francisco" {% if input_data and input_data['Location'] == 'San Francisco' %}selected{% endif %}>San Francisco</option>
+                    <option value="Seattle" {% if input_data and input_data['Location'] == 'Seattle' %}selected{% endif %}>Seattle</option>
+                </select>
+            </div>
+            <div class="full-width">
+                <button type="submit">Predict Salary</button>
+            </div>
+        </form>
+
+        {% if prediction %}
+        <div class="result">
+            Predicted Annual Salary: $ {{ prediction }}
+            <br />
+            {% if accuracy and accuracy.r2_score is not none %}
+            <small style="color: #ccc; font-weight: 500;">Model Accuracy: {{ (accuracy.r2_score * 100) | round(2) }}%</small>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {% if analysis %}
+        <div class="analysis">
+            <h3>Recent Trends</h3>
+            <p>{{ analysis.recent_trends }}</p>
+
+            <h3>Recommended Studies</h3>
+            <p>{{ analysis.recommended_studies }}</p>
+
+            <h3>Job Profiles</h3>
+            <ul>
+                {% for job in analysis.job_profiles %}
+                <li>{{ job }}</li>
+                {% endfor %}
+            </ul>
+
+            <h3>Top Companies</h3>
+            <ul>
+                {% for company in analysis.top_companies %}
+                <li>{{ company }}</li>
+                {% endfor %}
+            </ul>
+
+            <h3>Honest Feedback</h3>
+            <p>{{ analysis.honest_feedback }}</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        const menuIcon = document.getElementById('menuIcon');
+        const sideMenu = document.getElementById('sideMenu');
+
+        menuIcon.addEventListener('click', () => {
+            sideMenu.classList.toggle('open');
+        });
+
+        menuIcon.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                sideMenu.classList.toggle('open');
+            }
+        });
+
+        // Optional: Add scroll hover effect on body background
+        document.addEventListener('scroll', () => {
+            const scrollTop = window.scrollY;
+            document.body.style.backgroundPosition = `center ${scrollTop * 0.5}px`;
+        });
+    </script>
+</body>
+</html>
