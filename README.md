@@ -50,6 +50,35 @@ python salary_prediction_model.py
 python app.py
 ```
 
+5. **Open your browser**
+
+Navigate to [http://127.0.0.1:5000](http://127.0.0.1:5000) to use the app.
+
+---
+
+## Machine Learning Workflow 🧠
+
+### 1. Data Preprocessing and Exploratory Data Analysis (EDA)
+
+- Conducted in the `Project.ipynb` notebook.
+- Loaded and cleaned the dataset (`Employers_data.csv`), handling missing values and irrelevant columns.
+- Performed exploratory data analysis using pandas, matplotlib, seaborn, and plotly to visualize distributions and relationships between features such as Age, Salary, Gender, Location, and more.
+
+### 2. Model Building and Training
+
+- Implemented in `salary_prediction_model.py`.
+- Loaded and preprocessed data by encoding categorical variables and splitting into training and test sets.
+- Trained multiple regression models: Linear Regression, Random Forest, Gradient Boosting, and XGBoost.
+- Evaluated models using R2 score to determine the best performing model.
+- The best model achieved an R2 score of approximately 0.95, indicating high accuracy in salary prediction.
+- Saved the best model (`best_salary_model.pkl`) and its accuracy metrics (`model_accuracy.json`).
+
+### 3. Integration with Web Application
+
+- The Flask app (`app.py`) loads the best trained model and accuracy data.
+- Provides a web UI (`templates/index.html`) where users input employee details to get salary predictions.
+- Displays the best model's accuracy score on the UI to build user trust.
+- Additional pages provide salary trends, study recommendations, and career advice.
 
 ---
 
@@ -66,4 +95,5 @@ python app.py
 Feel free to open issues or submit pull requests for improvements!
 
 ---
+
 
