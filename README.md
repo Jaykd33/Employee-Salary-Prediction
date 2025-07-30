@@ -4,6 +4,15 @@ A sleek web application that predicts employee salaries using advanced machine l
 
 ---
 
+## Website Snapshots
+![Home Page](https://github.com/Jaykd33/Employee-Salary-Prediction/blob/main/Home%20Page.png)
+![Home Page Result](https://github.com/Jaykd33/Employee-Salary-Prediction/blob/main/Home%20Page%20Result.png)
+![Sidemenu](https://github.com/Jaykd33/Employee-Salary-Prediction/blob/main/Menubar%20Image.png)
+![About Page](https://github.com/Jaykd33/Employee-Salary-Prediction/blob/main/About.html.png)
+![Recommendations](https://github.com/Jaykd33/Employee-Salary-Prediction/blob/main/Recommendations.html.png)
+![Trends](https://github.com/Jaykd33/Employee-Salary-Prediction/blob/main/Trends.html.png)
+
+
 ## Features ✨
 
 - Predict salaries based on age, gender, department, job title, experience, education, and location.
